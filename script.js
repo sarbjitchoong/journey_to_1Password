@@ -2,6 +2,8 @@ const canvas = document.querySelector("#journey-canvas");
 const ctx = canvas.getContext("2d", { alpha: true });
 const profileImage = new Image();
 profileImage.src = "assets/profile-photo.jpg";
+const planeImage = new Image();
+planeImage.src = "assets/plane2.png";
 
 const chapterKicker = document.querySelector("#chapter-kicker");
 const chapterTitle = document.querySelector("#chapter-title");
@@ -778,9 +780,9 @@ function drawPlane(point, next, progressOnRoute) {
   const isLeftbound = Math.cos(angle) < 0;
   const visualTopAngle = isLeftbound ? angle + Math.PI / 2 : angle - Math.PI / 2;
   const scale = clamp(width / 1280, 0.78, 1.12);
-  const bodyLength = 92 * scale;
-  const bodyHeight = 17 * scale;
-  const wingSpan = 46 * scale;
+  const planeWidth = 168 * scale;
+  const planeHeight =
+    planeWidth * ((planeImage.naturalHeight || 160) / (planeImage.naturalWidth || 586));
   const faceRadius = 30 * scale;
   const bob = Math.sin(progressOnRoute * Math.PI * 9) * 1.6 * scale;
   const normalX = Math.cos(visualTopAngle);
@@ -793,133 +795,19 @@ function drawPlane(point, next, progressOnRoute) {
   ctx.rotate(isLeftbound ? angle + Math.PI : angle);
   if (isLeftbound) ctx.scale(-1, 1);
 
-  ctx.shadowColor = "rgba(255, 255, 255, 0.24)";
-  ctx.shadowBlur = 14 * scale;
-
-  ctx.beginPath();
-  ctx.moveTo(-bodyLength * 0.1, bodyHeight * 0.12);
-  ctx.lineTo(-bodyLength * 0.28, wingSpan * 0.68);
-  ctx.quadraticCurveTo(bodyLength * 0.01, wingSpan * 0.52, bodyLength * 0.28, bodyHeight * 0.34);
-  ctx.lineTo(bodyLength * 0.12, bodyHeight * 0.08);
-  ctx.closePath();
-  ctx.fillStyle = "rgba(217, 224, 233, 0.94)";
-  ctx.strokeStyle = "rgba(19, 22, 29, 0.48)";
-  ctx.lineWidth = 0.9 * scale;
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.ellipse(bodyLength * 0.02, bodyHeight * 0.82, bodyHeight * 0.5, bodyHeight * 0.24, 0, 0, Math.PI * 2);
-  ctx.fillStyle = "#151820";
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(bodyLength * 0.02, bodyHeight * 0.8, bodyHeight * 0.3, bodyHeight * 0.12, 0, 0, Math.PI * 2);
-  ctx.fillStyle = "#f8fafc";
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(-bodyLength * 0.51, -bodyHeight * 0.18);
-  ctx.lineTo(-bodyLength * 0.62, -bodyHeight * 2.0);
-  ctx.quadraticCurveTo(-bodyLength * 0.42, -bodyHeight * 1.66, -bodyLength * 0.28, -bodyHeight * 0.44);
-  ctx.closePath();
-  ctx.fillStyle = "#101217";
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(-bodyLength * 0.49, bodyHeight * 0.18);
-  ctx.lineTo(-bodyLength * 0.68, bodyHeight * 0.94);
-  ctx.lineTo(-bodyLength * 0.41, bodyHeight * 0.45);
-  ctx.closePath();
-  ctx.fillStyle = "#11141b";
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(-bodyLength * 0.44, -bodyHeight * 0.1);
-  ctx.lineTo(-bodyLength * 0.08, -wingSpan * 0.72);
-  ctx.quadraticCurveTo(bodyLength * 0.11, -wingSpan * 0.6, bodyLength * 0.34, -bodyHeight * 0.26);
-  ctx.lineTo(bodyLength * 0.2, -bodyHeight * 0.02);
-  ctx.closePath();
-  ctx.fillStyle = "rgba(245, 247, 251, 0.98)";
-  ctx.strokeStyle = "rgba(20, 24, 31, 0.5)";
-  ctx.lineWidth = 0.9 * scale;
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.shadowBlur = 8 * scale;
-  ctx.beginPath();
-  ctx.moveTo(-bodyLength * 0.58, 0);
-  ctx.bezierCurveTo(-bodyLength * 0.5, -bodyHeight * 0.54, bodyLength * 0.24, -bodyHeight * 0.66, bodyLength * 0.5, -bodyHeight * 0.24);
-  ctx.quadraticCurveTo(bodyLength * 0.65, 0, bodyLength * 0.5, bodyHeight * 0.24);
-  ctx.bezierCurveTo(bodyLength * 0.22, bodyHeight * 0.64, -bodyLength * 0.48, bodyHeight * 0.52, -bodyLength * 0.58, 0);
-  ctx.closePath();
-  ctx.fillStyle = "#f9fafc";
-  ctx.fill();
-  ctx.strokeStyle = "rgba(15, 18, 24, 0.76)";
-  ctx.lineWidth = 1.05 * scale;
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(-bodyLength * 0.55, bodyHeight * 0.16);
-  ctx.bezierCurveTo(-bodyLength * 0.24, bodyHeight * 0.42, bodyLength * 0.25, bodyHeight * 0.38, bodyLength * 0.52, bodyHeight * 0.08);
-  ctx.lineTo(bodyLength * 0.51, bodyHeight * 0.3);
-  ctx.bezierCurveTo(bodyLength * 0.18, bodyHeight * 0.62, -bodyLength * 0.38, bodyHeight * 0.56, -bodyLength * 0.55, bodyHeight * 0.16);
-  ctx.closePath();
-  ctx.fillStyle = "rgba(15, 17, 22, 0.9)";
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.ellipse(bodyLength * 0.46, -bodyHeight * 0.1, bodyHeight * 0.24, bodyHeight * 0.15, 0.05, 0, Math.PI * 2);
-  ctx.fillStyle = "#101217";
-  ctx.fill();
-
-  ctx.fillStyle = "rgba(13, 17, 24, 0.82)";
-  for (let i = 0; i < 8; i += 1) {
-    ctx.beginPath();
-    ctx.arc(-bodyLength * 0.28 + i * 7.7 * scale, -bodyHeight * 0.16, 1.25 * scale, 0, Math.PI * 2);
-    ctx.fill();
+  if (planeImage.complete && planeImage.naturalWidth > 0) {
+    ctx.shadowColor = "rgba(255, 255, 255, 0.2)";
+    ctx.shadowBlur = 12 * scale;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(
+      planeImage,
+      -planeWidth * 0.52,
+      -planeHeight * 0.63,
+      planeWidth,
+      planeHeight,
+    );
   }
-
-  ctx.beginPath();
-  ctx.moveTo(bodyLength * 0.34, -bodyHeight * 0.34);
-  ctx.quadraticCurveTo(bodyLength * 0.5, -bodyHeight * 0.38, bodyLength * 0.57, -bodyHeight * 0.12);
-  ctx.lineTo(bodyLength * 0.45, bodyHeight * 0.02);
-  ctx.quadraticCurveTo(bodyLength * 0.38, -bodyHeight * 0.1, bodyLength * 0.34, -bodyHeight * 0.34);
-  ctx.closePath();
-  ctx.fillStyle = "#101217";
-  ctx.fill();
-
-  ctx.save();
-  ctx.translate(-bodyLength * 0.49, -bodyHeight * 1.12);
-  ctx.beginPath();
-  ctx.arc(0, 0, 4.9 * scale, 0, Math.PI * 2);
-  ctx.fillStyle = "#df1f2d";
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(0, 0, 2.6 * scale, 0, Math.PI * 2);
-  ctx.fillStyle = "#111318";
-  ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(0, -2.4 * scale);
-  ctx.lineTo(0.8 * scale, -0.7 * scale);
-  ctx.lineTo(2.4 * scale, -0.7 * scale);
-  ctx.lineTo(1 * scale, 0.35 * scale);
-  ctx.lineTo(1.6 * scale, 2.2 * scale);
-  ctx.lineTo(0, 1.1 * scale);
-  ctx.lineTo(-1.6 * scale, 2.2 * scale);
-  ctx.lineTo(-1 * scale, 0.35 * scale);
-  ctx.lineTo(-2.4 * scale, -0.7 * scale);
-  ctx.lineTo(-0.8 * scale, -0.7 * scale);
-  ctx.closePath();
-  ctx.fillStyle = "#df1f2d";
-  ctx.fill();
-  ctx.restore();
-
-  ctx.beginPath();
-  ctx.moveTo(-bodyLength * 0.18, bodyHeight * 0.48);
-  ctx.lineTo(bodyLength * 0.34, bodyHeight * 0.48);
-  ctx.strokeStyle = "rgba(223, 31, 45, 0.82)";
-  ctx.lineWidth = 1 * scale;
-  ctx.stroke();
 
   ctx.restore();
 
